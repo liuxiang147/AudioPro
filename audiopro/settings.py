@@ -63,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'converter.context_processors.analytics',
             ],
         },
     },
@@ -124,3 +125,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Analytics 配置
+# 支持: cloudflare | ga4 | umami | none
+ANALYTICS_PROVIDER = 'none'
+ANALYTICS_ID = ''
+ANALYTICS_HOST = ''

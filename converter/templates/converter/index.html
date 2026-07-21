@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AudioPro 工具箱 - 在线音频转换 & 提取</title>
 <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/ffmpeg.min.js"></script>
+{% if analytics_provider == 'cloudflare' and analytics_id %}
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "{{ analytics_id }}"}'></script>
+{% elif analytics_provider == 'ga4' and analytics_id %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ analytics_id }}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ analytics_id }}');</script>
+{% elif analytics_provider == 'umami' and analytics_id %}
+<script defer src="https://{{ analytics_host }}/script.js" data-website-id="{{ analytics_id }}"></script>
+{% endif %}
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: #0a0a12; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
