@@ -131,3 +131,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ANALYTICS_PROVIDER = 'none'
 ANALYTICS_ID = ''
 ANALYTICS_HOST = ''
+
+# Vercel AI Gateway 配置
+AI_GATEWAY_KEY = ''

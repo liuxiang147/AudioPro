@@ -707,14 +707,20 @@ async function showFileMetadata(file) {
 }
 
 // ==================== AI CHAT ASSISTANT ====================
-const chatState = { open: false, messages: [], apiKey: '', provider: 'openai', model: 'gpt-4o-mini' };
+const GATEWAY_KEY = '{{ ai_gateway_key|escapejs }}';
+const chatState = {
+  open: false, messages: [], apiKey: GATEWAY_KEY || '',
+  provider: GATEWAY_KEY ? 'vercel' : 'openai', model: 'gpt-4o-mini'
+};
 const CHAT_KEY = 'audiopro_chat_history';
 const API_KEY_KEY = 'audiopro_api_key';
+const PROVIDER_KEY = 'audiopro_provider';
 
 function loadChat() {
   try {
     chatState.messages = JSON.parse(localStorage.getItem(CHAT_KEY) || '[]');
-    chatState.apiKey = localStorage.getItem(API_KEY_KEY) || '';
+    chatState.apiKey = localStorage.getItem(API_KEY_KEY) || GATEWAY_KEY || '';
+    chatState.provider = localStorage.getItem(PROVIDER_KEY) || (GATEWAY_KEY ? 'vercel' : 'openai');
   } catch(e) {}
 }
 function saveChat() {
@@ -742,7 +748,12 @@ function renderChat() {
 
 function setProvider(p) {
   chatState.provider = p;
-  document.getElementById('chat-provider').textContent = p === 'openai' ? 'OpenAI' : p === 'anthropic' ? 'Anthropic' : '自定义';
+  const lbl = { vercel: 'Vercel AI Gateway', openai: 'OpenAI', anthropic: 'Anthropic' };
+  document.getElementById('chat-provider').textContent = lbl[p] || '自定义';
+  const el = document.getElementById('chat-api-model');
+  if (p === 'vercel') el.placeholder = 'gpt-4o / claude-sonnet-4-20250514';
+  else if (p === 'anthropic') el.placeholder = 'claude-sonnet-4-20250514';
+  else el.placeholder = '默认 gpt-4o-mini';
 }
 
 function openApiSettings() {
@@ -757,6 +768,7 @@ function saveApiSettings() {
   const m = document.getElementById('chat-api-model').value.trim();
   if (m) chatState.model = m;
   localStorage.setItem(API_KEY_KEY, chatState.apiKey);
+  localStorage.setItem(PROVIDER_KEY, chatState.provider);
   document.getElementById('chat-api-overlay').classList.remove('show');
   document.getElementById('chat-settings-btn').textContent = chatState.apiKey ? '🔑' : '⚙️';
 }
@@ -796,12 +808,27 @@ async function sendChatMsg(msg) {
 
   try {
     let reply = '';
-    if (chatState.provider === 'openai') {
+    const model = chatState.model || (chatState.provider === 'anthropic' ? 'claude-sonnet-4-20250514' : 'gpt-4o-mini');
+
+    if (chatState.provider === 'vercel') {
+      const resp = await fetch('https://ai-gateway.vercel.sh/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + chatState.apiKey },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'system', content: systemPrompt }, ...chatState.messages.slice(-20)],
+          max_tokens: 800
+        })
+      });
+      if (!resp.ok) throw new Error('Gateway Error: ' + resp.status);
+      const data = await resp.json();
+      reply = data.choices?.[0]?.message?.content || '无回复';
+    } else if (chatState.provider === 'openai') {
       const resp = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + chatState.apiKey },
         body: JSON.stringify({
-          model: chatState.model,
+          model: model,
           messages: [{ role: 'system', content: systemPrompt }, ...chatState.messages.slice(-20)],
           max_tokens: 800
         })
@@ -814,7 +841,7 @@ async function sendChatMsg(msg) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': chatState.apiKey, 'anthropic-version': '2023-06-01' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: model,
           max_tokens: 800,
           system: systemPrompt,
           messages: chatState.messages.slice(-20).map(m => ({ role: m.role, content: m.content }))
@@ -823,8 +850,6 @@ async function sendChatMsg(msg) {
       if (!resp.ok) throw new Error('API Error: ' + resp.status);
       const data = await resp.json();
       reply = data.content?.[0]?.text || '无回复';
-    } else {
-      reply = '请选择 OpenAI 或 Anthropic 作为 AI 提供商。';
     }
     chatState.messages.push({ role: 'assistant', content: reply });
     saveChat();
@@ -918,13 +943,14 @@ const chatHTML = `
     <div class="chat-api-title">🔑 AI 提供商设置</div>
     <div class="chat-api-label">选择 API 提供商</div>
     <select class="chat-api-select" id="chat-api-provider" onchange="setProvider(this.value)">
+      <option value="vercel">Vercel AI Gateway</option>
       <option value="openai">OpenAI</option>
       <option value="anthropic">Anthropic</option>
     </select>
     <div class="chat-api-label">API Key</div>
     <input class="chat-api-input" id="chat-api-key" type="password" placeholder="sk-...">
     <div class="chat-api-label">模型 (可选)</div>
-    <input class="chat-api-input" id="chat-api-model" placeholder="默认 gpt-4o-mini / claude-sonnet-4-20250514">
+    <input class="chat-api-input" id="chat-api-model" placeholder="gpt-4o / claude-sonnet-4-20250514">
     <button class="chat-api-btn" onclick="saveApiSettings()">保存</button>
   </div>
 </div>`;
