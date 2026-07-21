@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pip install -r requirements.txt && python3 manage.py collectstatic --noinput",
+  "buildCommand": "pip install -r requirements.txt && python3 manage.py collectstatic --noinput --clear --no-post-process && python3 manage.py check --deploy --fail-level WARNING",
   "outputDirectory": "staticfiles",
   "devCommand": "python3 manage.py runserver",
   "installCommand": "pip install -r requirements.txt",
