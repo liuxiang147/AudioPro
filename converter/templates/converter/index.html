@@ -698,8 +698,233 @@ async function showFileMetadata(file) {
   el.innerHTML = html;
 }
 
+// ==================== AI CHAT ASSISTANT ====================
+const chatState = { open: false, messages: [], apiKey: '', provider: 'openai', model: 'gpt-4o-mini' };
+const CHAT_KEY = 'audiopro_chat_history';
+const API_KEY_KEY = 'audiopro_api_key';
+
+function loadChat() {
+  try {
+    chatState.messages = JSON.parse(localStorage.getItem(CHAT_KEY) || '[]');
+    chatState.apiKey = localStorage.getItem(API_KEY_KEY) || '';
+  } catch(e) {}
+}
+function saveChat() {
+  localStorage.setItem(CHAT_KEY, JSON.stringify(chatState.messages.slice(-50)));
+}
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+function toggleChat() {
+  chatState.open = !chatState.open;
+  document.getElementById('chat-panel').classList.toggle('show', chatState.open);
+  if (chatState.open) renderChat();
+}
+
+function renderChat() {
+  const box = document.getElementById('chat-msgs');
+  box.innerHTML = chatState.messages.map(m =>
+    `<div class="chat-msg ${m.role}">${escHtml(m.content)}</div>`
+  ).join('') || '<div class="chat-empty">发送消息开始咨询</div>';
+  box.scrollTop = box.scrollHeight;
+}
+
+function setProvider(p) {
+  chatState.provider = p;
+  document.getElementById('chat-provider').textContent = p === 'openai' ? 'OpenAI' : p === 'anthropic' ? 'Anthropic' : '自定义';
+}
+
+function openApiSettings() {
+  document.getElementById('chat-api-overlay').classList.add('show');
+  document.getElementById('chat-api-key').value = chatState.apiKey;
+  setProvider(chatState.provider);
+}
+
+function saveApiSettings() {
+  chatState.apiKey = document.getElementById('chat-api-key').value.trim();
+  chatState.provider = document.getElementById('chat-api-provider').value;
+  const m = document.getElementById('chat-api-model').value.trim();
+  if (m) chatState.model = m;
+  localStorage.setItem(API_KEY_KEY, chatState.apiKey);
+  document.getElementById('chat-api-overlay').classList.remove('show');
+  document.getElementById('chat-settings-btn').textContent = chatState.apiKey ? '🔑' : '⚙️';
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  if (!chatState.apiKey) {
+    openApiSettings();
+    setTimeout(() => {
+      if (chatState.apiKey) sendChatMsg(msg);
+      else showToast('请先配置 API Key', 'error');
+    }, 100);
+    return;
+  }
+  sendChatMsg(msg);
+}
+
+async function sendChatMsg(msg) {
+  chatState.messages.push({ role: 'user', content: msg });
+  renderChat();
+
+  const box = document.getElementById('chat-msgs');
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'chat-msg assistant';
+  loadingDiv.textContent = '思考中...';
+  box.appendChild(loadingDiv);
+  box.scrollTop = box.scrollHeight;
+
+  const systemPrompt = `你是一个音频处理专家助手，帮助用户解答关于音频格式转换、提取、裁剪、编码等技术问题。
+你擅长解释以下概念：MP3、WAV、FLAC、OGG、AAC、M4A、Opus 等格式的区别；
+比特率、采样率、位深、声道数的含义；无损 vs 有损压缩的原理。
+回答要简洁、准确、实用，使用用户提问的语言回复。如果用户问的是 AudioPro 网站功能相关问题，引导他们使用页面上的工具。`;
+
+  try {
+    let reply = '';
+    if (chatState.provider === 'openai') {
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + chatState.apiKey },
+        body: JSON.stringify({
+          model: chatState.model,
+          messages: [{ role: 'system', content: systemPrompt }, ...chatState.messages.slice(-20)],
+          max_tokens: 800
+        })
+      });
+      if (!resp.ok) throw new Error('API Error: ' + resp.status);
+      const data = await resp.json();
+      reply = data.choices?.[0]?.message?.content || '无回复';
+    } else if (chatState.provider === 'anthropic') {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': chatState.apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 800,
+          system: systemPrompt,
+          messages: chatState.messages.slice(-20).map(m => ({ role: m.role, content: m.content }))
+        })
+      });
+      if (!resp.ok) throw new Error('API Error: ' + resp.status);
+      const data = await resp.json();
+      reply = data.content?.[0]?.text || '无回复';
+    } else {
+      reply = '请选择 OpenAI 或 Anthropic 作为 AI 提供商。';
+    }
+    chatState.messages.push({ role: 'assistant', content: reply });
+    saveChat();
+    renderChat();
+  } catch (e) {
+    loadingDiv.remove();
+    chatState.messages.push({ role: 'assistant', content: '⚠️ 请求失败：' + e.message + '\n\n请检查 API Key 是否正确，或在设置中更换提供商。' });
+    renderChat();
+  }
+}
+
+loadChat();
+
+// ==================== CHAT CSS ====================
+const chatStyle = document.createElement('style');
+chatStyle.textContent = `
+.chat-fab { position: fixed; bottom: 24px; right: 24px; width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff2d95, #8b5cf6); color: #fff; border: none; font-size: 22px;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(139,92,246,.4); z-index: 1000; transition: transform .2s; }
+.chat-fab:hover { transform: scale(1.1); }
+.chat-fab svg { width: 24px; height: 24px; fill: currentColor; vertical-align: middle; }
+
+.chat-panel { position: fixed; bottom: 88px; right: 24px; width: 360px; height: 520px;
+  background: #0f0f1e; border: 1px solid rgba(139,92,246,.25); border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6); display: flex; flex-direction: column; z-index: 999;
+  transform: scale(0.9); opacity: 0; pointer-events: none; transition: all .2s; transform-origin: bottom right; }
+.chat-panel.show { transform: scale(1); opacity: 1; pointer-events: all; }
+
+.chat-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+  border-bottom: 1px solid rgba(139,92,246,.15); }
+.chat-header-title { font-size: 14px; font-weight: 600; color: #e0e0e0; }
+.chat-header-actions { display: flex; gap: 6px; }
+.chat-header-btn { background: none; border: none; color: #666; cursor: pointer; font-size: 14px; padding: 4px; border-radius: 4px; }
+.chat-header-btn:hover { color: #ff2d95; background: rgba(255,45,149,.1); }
+
+.chat-msgs { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.chat-msgs::-webkit-scrollbar { width: 4px; }
+.chat-msgs::-webkit-scrollbar-thumb { background: rgba(139,92,246,.3); border-radius: 2px; }
+.chat-empty { text-align: center; color: #555; font-size: 12px; margin-top: 80px; }
+.chat-msg { max-width: 85%; padding: 8px 12px; border-radius: 8px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.chat-msg.user { align-self: flex-end; background: linear-gradient(135deg, #ff2d95, #8b5cf6); color: #fff; }
+.chat-msg.assistant { align-self: flex-start; background: rgba(255,255,255,.04); color: #d0d0d0; border: 1px solid rgba(139,92,246,.12); }
+
+.chat-input-area { display: flex; padding: 10px 12px; border-top: 1px solid rgba(139,92,246,.12); gap: 8px; }
+.chat-input { flex: 1; background: rgba(255,255,255,.04); border: 1px solid rgba(139,92,246,.2); border-radius: 8px;
+  padding: 8px 12px; color: #e0e0e0; font-size: 13px; outline: none; resize: none; font-family: inherit; }
+.chat-input:focus { border-color: #ff2d95; }
+.chat-send { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ff2d95, #8b5cf6);
+  color: #fff; border: none; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.chat-send:hover { box-shadow: 0 0 12px rgba(139,92,246,.4); }
+
+.chat-api-overlay { display: none; position: absolute; inset: 0; background: rgba(15,15,30,.95); z-index: 10;
+  border-radius: 12px; flex-direction: column; align-items: center; justify-content: center; padding: 24px; gap: 12px; }
+.chat-api-overlay.show { display: flex; }
+.chat-api-title { font-size: 15px; color: #e0e0e0; margin-bottom: 4px; }
+.chat-api-label { font-size: 11px; color: #888; align-self: flex-start; }
+.chat-api-input { width: 100%; background: rgba(255,255,255,.04); border: 1px solid rgba(139,92,246,.2); border-radius: 6px;
+  padding: 8px 12px; color: #e0e0e0; font-size: 13px; outline: none; }
+.chat-api-input:focus { border-color: #ff2d95; }
+.chat-api-select { width: 100%; background: rgba(255,255,255,.04); border: 1px solid rgba(139,92,246,.2); border-radius: 6px;
+  padding: 8px 12px; color: #e0e0e0; font-size: 13px; outline: none; }
+.chat-api-btn { padding: 8px 24px; background: linear-gradient(135deg, #ff2d95, #8b5cf6); color: #fff; border: none;
+  border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 8px; }
+
+@media (max-width: 480px) {
+  .chat-panel { right: 8px; left: 8px; width: auto; height: 60vh; bottom: 80px; }
+}
+`;
+document.head.appendChild(chatStyle);
+
+// ==================== CHAT HTML ====================
+const chatHTML = `
+<div class="chat-fab" id="chat-fab" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/></svg>
+</div>
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-header">
+    <div class="chat-header-title">💬 AI 音频助手</div>
+    <div class="chat-header-actions">
+      <button class="chat-header-btn" id="chat-settings-btn" onclick="openApiSettings()" title="API 设置">⚙️</button>
+      <button class="chat-header-btn" onclick="chatState.messages=[];saveChat();renderChat()" title="清空对话">🗑️</button>
+      <button class="chat-header-btn" onclick="toggleChat()" title="关闭">✕</button>
+    </div>
+  </div>
+  <div class="chat-msgs" id="chat-msgs"><div class="chat-empty">发送消息开始咨询</div></div>
+  <div class="chat-input-area">
+    <textarea class="chat-input" id="chat-input" placeholder="问关于音频格式、转换参数的问题..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+    <button class="chat-send" onclick="sendChat()">↵</button>
+  </div>
+  <div class="chat-api-overlay" id="chat-api-overlay">
+    <div class="chat-api-title">🔑 AI 提供商设置</div>
+    <div class="chat-api-label">选择 API 提供商</div>
+    <select class="chat-api-select" id="chat-api-provider" onchange="setProvider(this.value)">
+      <option value="openai">OpenAI</option>
+      <option value="anthropic">Anthropic</option>
+    </select>
+    <div class="chat-api-label">API Key</div>
+    <input class="chat-api-input" id="chat-api-key" type="password" placeholder="sk-...">
+    <div class="chat-api-label">模型 (可选)</div>
+    <input class="chat-api-input" id="chat-api-model" placeholder="默认 gpt-4o-mini / claude-sonnet-4-20250514">
+    <button class="chat-api-btn" onclick="saveApiSettings()">保存</button>
+  </div>
+</div>`;
+document.body.insertAdjacentHTML('beforeend', chatHTML);
+// Restore api key indicator
+if (chatState.apiKey) document.getElementById('chat-settings-btn').textContent = '🔑';
+
 // ==================== INIT ====================
-// Load ffmpeg in background
 setTimeout(() => {
   ensureFFmpeg().catch(() => {});
 }, 1000);
