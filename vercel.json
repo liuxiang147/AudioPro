@@ -1,0 +1,7 @@
+{
+  "buildCommand": "pip install -r requirements.txt && python3 manage.py collectstatic --noinput",
+  "outputDirectory": "staticfiles",
+  "devCommand": "python3 manage.py runserver",
+  "installCommand": "pip install -r requirements.txt",
+  "framework": "django"
+}
