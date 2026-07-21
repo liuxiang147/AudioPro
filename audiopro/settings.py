@@ -134,5 +134,5 @@ ANALYTICS_PROVIDER = 'none'
 ANALYTICS_ID = ''
 ANALYTICS_HOST = ''
 
-# Vercel AI Gateway 配置
+# AI Gateway Key (可选，留空则用户自带 Key)
 AI_GATEWAY_KEY = os.environ.get('AI_GATEWAY_KEY', '')
