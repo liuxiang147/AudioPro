@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,6 +27,7 @@ SECRET_KEY = 'django-insecure-9b1sl$g%=bg1mald9!0#rd71i4$w91vy)zmll2qive2&8tk&@s
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -133,4 +135,4 @@ ANALYTICS_ID = ''
 ANALYTICS_HOST = ''
 
 # Vercel AI Gateway 配置
-AI_GATEWAY_KEY = ''
+AI_GATEWAY_KEY = os.environ.get('AI_GATEWAY_KEY', '')
