@@ -1,13 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb" }
-    }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "api/index.py" }
-  ],
-  "buildCommand": "pip install -r requirements.txt && python3 manage.py collectstatic --noinput && python3 manage.py check --deploy --fail-level WARNING"
+  "buildCommand": "pip install -r requirements.txt && python3 manage.py collectstatic --noinput && python3 manage.py check --deploy --fail-level WARNING",
+  "framework": "django"
 }
