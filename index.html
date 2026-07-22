@@ -10,173 +10,176 @@
 <meta property="og:title" content="AudioPro - 在线音频转换 & 提取">
 <meta property="og:description" content="免费在线音频转换工具。支持 MP3, WAV, FLAC, OGG, AAC, M4A, Opus 互转，视频提取音频，音频裁剪。浏览器本地处理，不上传服务器。">
 <meta property="og:type" content="website">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%230a0a12'/%3E%3Cstop offset='100%25' style='stop-color:%231a0a2e'/%3E%3C/linearGradient%3E%3ClinearGradient id='t' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff2d95'/%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='630' fill='url(%23b)'/%3E%3Ctext x='600' y='280' font-family='system-ui,sans-serif' font-size='72' font-weight='700' fill='url(%23t)' text-anchor='middle'%3EAudioPro%3C/text%3E%3Ctext x='600' y='350' font-family='system-ui,sans-serif' font-size='28' fill='%23a78bfa' text-anchor='middle'%3E在线音频转换 · 提取 · 裁剪%3C/text%3E%3Ctext x='600' y='490' font-family='system-ui,sans-serif' font-size='14' fill='%23444' text-anchor='middle'%3E所有处理在浏览器本地完成 · 不上传服务器%3C/text%3E%3C/svg%3E">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AudioPro">
 <meta name="twitter:description" content="免费在线音频转换 & 提取工具">
-<meta property="og:image" content="https://liuxiang147.github.io/AudioPro/og.svg">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff2d95'/%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='%230a0a12'/%3E%3Ctext x='50' y='68' font-family='system-ui,sans-serif' font-size='52' font-weight='700' fill='url(%23g)' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
 <style>
-:root{--primary:#ff2d95;--primary2:#8b5cf6;--bg:#0a0a12;--bg2:#0f0f1e;--bg3:#1a0a2e;--text:#e0e0e0;--text2:#888;--border:rgba(139,92,246,.15);--radius:8px}
+:root{--primary:#ff2d95;--primary2:#8b5cf6;--bg:#0a0a12;--bg2:#0f0f1e;--bg3:#1a0a2e;--text:#e0e0e0;--text2:#888;--border:rgba(139,92,246,.15);--radius:8px;--radius-lg:12px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .container{max-width:1200px;margin:0 auto;padding:0 16px}
 
 /* Header */
-.header{background:var(--bg2);border-bottom:1px solid var(--border)}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(15,15,30,.92)}
 .header-top{display:flex;align-items:center;padding:12px 0;gap:20px;flex-wrap:wrap}
 .logo-wrap{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--primary),var(--primary2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--primary),var(--primary2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px}
 .logo-sub{font-size:11px;color:var(--text2)}
 .header-search{flex:1;min-width:200px}
 .header-search form{display:flex}
-.header-search input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius) 0 0 var(--radius);padding:7px 14px;color:#fff;font-size:13px;outline:none;transition:border-color .15s}
+.header-search input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius) 0 0 var(--radius);padding:7px 14px;color:#fff;font-size:13px;outline:none;transition:border-color .2s}
 .header-search input:focus{border-color:var(--primary)}
-.header-search button{background:linear-gradient(135deg,var(--primary),var(--primary2));border:none;border-radius:0 var(--radius) var(--radius) 0;padding:7px 16px;color:#fff;cursor:pointer;font-size:14px}
+.header-search button{background:linear-gradient(135deg,var(--primary),var(--primary2));border:none;border-radius:0 var(--radius) var(--radius) 0;padding:7px 16px;color:#fff;cursor:pointer;font-size:14px;transition:opacity .2s}
+.header-search button:hover{opacity:.85}
 .header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer;font-size:12px;transition:all .15s;white-space:nowrap}
-.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer;font-size:12px;transition:all .2s;white-space:nowrap}
+.btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(255,45,149,.06)}
 .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border:none}
-.btn-primary:hover{box-shadow:0 0 20px rgba(139,92,246,.4);color:#fff}
-.btn-pink{color:var(--primary)}
-.btn-sm{padding:4px 10px;font-size:11px}
+.btn-primary:hover{box-shadow:0 0 24px rgba(139,92,246,.4);color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary2));transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
 
 /* Nav */
 .header-navbar{border-top:1px solid var(--border);padding:0}
-.navbar-nav{display:flex;list-style:none;gap:0;overflow-x:auto;white-space:nowrap}
+.navbar-nav{display:flex;list-style:none;gap:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.navbar-nav::-webkit-scrollbar{display:none}
 .nav-item{position:relative}
-.nav-item>a{display:block;padding:10px 18px;font-size:13px;color:var(--text2);transition:all .15s;border-bottom:2px solid transparent}
+.nav-item>a{display:block;padding:10px 18px;font-size:13px;color:var(--text2);transition:all .2s;border-bottom:2px solid transparent}
 .nav-item>a:hover,.nav-item>a.active{color:var(--primary);border-bottom-color:var(--primary)}
 .nav-item .hover-menu{display:none;position:absolute;top:100%;left:0;background:var(--bg2);border:1px solid var(--border);border-radius:0 0 var(--radius) var(--radius);padding:6px 0;min-width:160px;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-.nav-item:hover .hover-menu{display:block}
+.nav-item:hover .hover-menu{display:block;animation:fadeIn .15s}
 .hover-menu .nav-item>a{padding:7px 18px;font-size:12px;border-bottom:none}
 .hover-menu .nav-item>a:hover{background:rgba(139,92,246,.08);color:var(--primary)}
 
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
 /* Main */
-.app-main{padding:20px 0}
+.app-main{padding:20px 0 40px}
 .row{display:flex;gap:20px;flex-wrap:wrap}
 .col-8{flex:1;min-width:0}
 .col-4{width:380px;flex-shrink:0}
 
-/* Carousel */
-.carousel{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--bg2);border:1px solid var(--border)}
-.carousel-inner{position:relative;overflow:hidden}
-.carousel-item{display:none;padding:40px 30px;min-height:280px}
-.carousel-item.active{display:flex;flex-direction:column;justify-content:center}
-.carousel-item h2{font-size:26px;font-weight:700;margin-bottom:8px}
-.carousel-item p{font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6}
-.carousel-item .btn{margin-top:4px}
-.carousel-indicators{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
-.carousel-indicators li{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;list-style:none;transition:all .15s}
-.carousel-indicators li.active{background:var(--primary);width:24px;border-radius:4px}
-.carousel-control{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;opacity:0;transition:opacity .2s}
-.carousel:hover .carousel-control{opacity:1}
-.carousel-control:hover{background:rgba(0,0,0,.6)}
-.carousel-control.left{left:12px}
-.carousel-control.right{right:12px}
+/* Hero */
+.hero{background:linear-gradient(135deg,#0f0f1e,#1a0a2e);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px 32px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.hero h1{font-size:24px;font-weight:700;margin-bottom:6px;background:linear-gradient(90deg,#fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:13px;color:var(--text2);line-height:1.6;max-width:480px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.hero-actions .btn{padding:10px 20px;font-size:13px}
 
-/* Sidebar */
-.sidebar-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.sidebar-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.sidebar-tabs{display:flex;gap:0}
-.sidebar-tab{padding:6px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.sidebar-tab.active,.sidebar-tab:hover{color:var(--primary);border-bottom-color:var(--primary)}
-.sidebar-body{padding:8px 0}
-.track-item{display:flex;align-items:center;padding:8px 16px;cursor:pointer;transition:all .1s;gap:8px}
-.track-item:hover{background:rgba(139,92,246,.06)}
-.track-name{flex:1;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.track-time{font-size:11px;color:var(--text2);flex-shrink:0}
-.track-time.green{color:#4ade80}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;transition:border-color .2s}
+.stat-card:hover{border-color:rgba(139,92,246,.3)}
+.stat-num{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--primary),var(--primary2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px}
 
 /* Tools section */
 .section{margin-bottom:24px}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
-.section-title{font-size:18px;font-weight:600}
-.section-more{font-size:12px;color:var(--text2)}
-.section-more:hover{color:var(--primary)}
+.section-title{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
 .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .15s}
-.tool-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 20px rgba(139,92,246,.12)}
-.tool-card-icon{font-size:28px;margin-bottom:8px}
-.tool-card-title{font-size:14px;font-weight:600;margin-bottom:4px}
-.tool-card-desc{font-size:11px;color:var(--text2);line-height:1.5}
-
-/* Stats */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
-.stat-num{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--primary),var(--primary2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-label{font-size:11px;color:var(--text2);margin-top:4px}
+.tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--primary2));opacity:0;transition:opacity .2s}
+.tool-card:hover::before{opacity:1}
+.tool-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,.12)}
+.tool-card-icon{font-size:28px;margin-bottom:10px;display:block}
+.tool-card-title{font-size:14px;font-weight:600;margin-bottom:6px}
+.tool-card-desc{font-size:11px;color:var(--text2);line-height:1.6}
 
 /* Tool panel */
-.tool-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
-.tool-panel-title{font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.tool-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px;animation:fadeIn .2s}
+.tool-panel-title{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
 /* Upload zone */
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
-.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary);background:rgba(255,45,149,.04)}
-.upload-zone-icon{font-size:36px;margin-bottom:6px}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:40px 20px;text-align:center;cursor:pointer;transition:all .25s;margin-bottom:16px;position:relative}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary);background:rgba(255,45,149,.04);transform:scale(1.01)}
+.upload-zone-icon{font-size:40px;margin-bottom:8px;display:block}
 .upload-zone-text{font-size:14px;color:#aaa}
-.upload-zone-hint{font-size:12px;color:#555;margin-top:4px}
+.upload-zone-hint{font-size:12px;color:#555;margin-top:6px}
 
 /* File list */
 .file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.file-item{display:flex;align-items:center;padding:8px 12px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;gap:10px}
-.file-icon{font-size:18px;flex-shrink:0}
+.file-item{display:flex;align-items:center;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius);gap:12px;transition:border-color .2s,background .2s;animation:fadeIn .15s}
+.file-item:hover{border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.04)}
+.file-icon{font-size:20px;flex-shrink:0}
 .file-info{flex:1;min-width:0}
-.file-name{font-size:12px;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.file-meta{font-size:11px;color:#555;margin-top:1px}
-.file-remove{background:none;border:none;color:#555;cursor:pointer;padding:2px 6px;border-radius:4px;font-size:13px}
+.file-name{font-size:13px;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta{font-size:11px;color:#555;margin-top:2px}
+.file-remove{background:none;border:none;color:#555;cursor:pointer;padding:4px 8px;border-radius:4px;font-size:14px;transition:all .15s}
 .file-remove:hover{color:var(--primary);background:rgba(255,45,149,.1)}
 
 /* Toolbar */
 .toolbar-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .toolbar-label{font-size:12px;color:var(--text2);min-width:50px}
-.toolbar select,.toolbar input[type="number"]{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:#e0e0e0;font-size:12px;outline:none}
+.toolbar select,.toolbar input[type="number"]{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:#e0e0e0;font-size:12px;outline:none;transition:border-color .2s;cursor:pointer}
 .toolbar select:focus,.toolbar input:focus{border-color:var(--primary)}
 .toolbar option{background:var(--bg2)}
 
 /* Progress */
-.progress-container{display:none;margin-top:10px}
-.progress-container.show{display:block}
-.progress-bar-outer{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
-.progress-bar-inner{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:3px;transition:width .2s}
-.progress-text{font-size:11px;color:var(--text2);margin-top:4px;text-align:center}
+.progress-container{display:none;margin-top:16px}
+.progress-container.show{display:block;animation:fadeIn .2s}
+.progress-bar-outer{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.progress-bar-inner{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:3px;transition:width .3s ease}
+.progress-text{font-size:12px;color:var(--text2);margin-top:6px;text-align:center}
 
 /* Results */
-.result-item{display:flex;align-items:center;padding:8px 12px;background:rgba(100,255,100,.03);border:1px solid rgba(100,255,100,.15);border-radius:6px;gap:10px;margin-bottom:6px}
+.results-area{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.result-item{display:flex;align-items:center;padding:12px 16px;background:rgba(100,255,100,.04);border:1px solid rgba(100,255,100,.15);border-radius:var(--radius);gap:12px;animation:fadeIn .2s}
 .result-info{flex:1}
-.result-name{font-size:12px;color:#8f8}
-.result-meta{font-size:11px;color:#666}
-.result-download{padding:5px 12px;background:linear-gradient(135deg,#2d9,var(--primary2));color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:11px;text-decoration:none}
+.result-name{font-size:13px;color:#8f8}
+.result-meta{font-size:11px;color:#666;margin-top:2px}
+.result-download{padding:7px 16px;background:linear-gradient(135deg,#2d9,var(--primary2));color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;text-decoration:none;font-weight:600;transition:all .2s;flex-shrink:0}
+.result-download:hover{box-shadow:0 0 16px rgba(45,153,255,.3);transform:translateY(-1px)}
 
 /* Trim */
-.trim-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
-.trim-time{font-size:12px;color:#888;font-family:monospace}
+.trim-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding:12px;background:rgba(255,255,255,.02);border-radius:var(--radius)}
 .trim-range{display:flex;align-items:center;gap:6px}
-.trim-range input[type="number"]{width:60px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:#e0e0e0;font-size:12px;outline:none}
+.trim-range input[type="number"]{width:60px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:#e0e0e0;font-size:12px;outline:none;transition:border-color .2s}
+.trim-range input:focus{border-color:var(--primary)}
+.trim-range span{font-size:12px;color:#888}
 
 /* Meta */
 .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.meta-row{display:flex;padding:5px 10px;background:rgba(255,255,255,.02);border-radius:4px}
-.meta-key{font-size:11px;color:#888;min-width:90px}
-.meta-val{font-size:11px;color:#ddd;word-break:break-all}
+.meta-row{display:flex;padding:6px 12px;background:rgba(255,255,255,.02);border-radius:4px;align-items:center}
+.meta-key{font-size:11px;color:#888;min-width:90px;flex-shrink:0}
+.meta-val{font-size:12px;color:#ddd;word-break:break-all}
 
-/* Footer */
-.footer{background:var(--bg2);border-top:1px solid var(--border);padding:24px 0;margin-top:32px;text-align:center;font-size:12px;color:#555}
-.footer a{color:#666}
-.footer a:hover{color:var(--primary)}
+/* Sidebar */
+.sidebar-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.sidebar-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.sidebar-tabs{display:flex;gap:0}
+.sidebar-tab{padding:6px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.sidebar-tab.active,.sidebar-tab:hover{color:var(--primary);border-bottom-color:var(--primary)}
+.sidebar-body{padding:8px 0}
+.track-item{display:flex;align-items:center;padding:8px 16px;cursor:pointer;transition:all .15s;gap:8px}
+.track-item:hover{background:rgba(139,92,246,.06)}
+.track-name{flex:1;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-time{font-size:11px;color:var(--text2);flex-shrink:0}
+.track-time.green{color:#4ade80}
 
 /* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--border);padding:10px 18px;border-radius:var(--radius);font-size:13px;color:#a78bfa;box-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
-.toast.show{opacity:1}
-.toast.success{border-color:rgba(100,255,100,.3);color:#8f8}
-.toast.error{border-color:rgba(255,60,60,.3);color:#ff6060}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--bg3);border:1px solid var(--border);padding:10px 24px;border-radius:var(--radius);font-size:13px;color:#a78bfa;box-shadow:0 8px 32px rgba(0,0,0,.6);opacity:0;transition:all .3s ease;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(100,255,100,.25);color:#8f8}
+.toast.error{border-color:rgba(255,60,60,.25);color:#ff6060}
 
-/* Page nav */
-.page-nav{display:flex;gap:4px}
-.page-nav-btn{padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.02);color:var(--text2);cursor:pointer;font-size:12px;transition:all .1s}
-.page-nav-btn.active,.page-nav-btn:hover{border-color:var(--primary);color:var(--primary)}
-.page-nav-btn.disabled{opacity:.3;cursor:default}
+/* Footer */
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 0;margin-top:40px;text-align:center;font-size:12px;color:#555;line-height:1.8}
+.footer a{color:#666;transition:color .2s}
+.footer a:hover{color:var(--primary)}
+
+/* Loading overlay */
+.loading-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,18,.8);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(4px)}
+.loading-overlay.show{display:flex;animation:fadeIn .3s}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text2)}
 
 @media(max-width:768px){
 .col-4{width:100%}
@@ -186,13 +189,21 @@ a{color:inherit;text-decoration:none}
 .header-search{min-width:0}
 .navbar-nav{gap:0}
 .nav-item>a{padding:8px 12px;font-size:12px}
-.carousel-item{padding:24px 20px;min-height:200px}
-.carousel-item h2{font-size:20px}
+.hero{padding:24px 20px;flex-direction:column;text-align:center}
+.hero h1{font-size:20px}
+.hero-actions{justify-content:center}
 .stats-row{grid-template-columns:repeat(2,1fr)}
+.meta-grid{grid-template-columns:1fr}
+.toast{max-width:90vw;white-space:normal}
 }
 </style>
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">正在加载 FFmpeg 音频处理引擎 (~30MB)...</div>
+</div>
 
 <header class="header">
 <div class="container">
@@ -210,7 +221,7 @@ a{color:inherit;text-decoration:none}
 </form>
 </div>
 <div class="header-actions">
-<a class="btn btn-primary" href="https://github.com/liuxiang147/AudioPro" target="_blank">⭐ GitHub</a>
+<a class="btn" href="https://github.com/liuxiang147/AudioPro" target="_blank">⭐ GitHub</a>
 </div>
 </div>
 
@@ -239,63 +250,21 @@ a{color:inherit;text-decoration:none}
 <div class="app-main">
 <div class="container">
 
-<!-- Carousel + Sidebar -->
-<div class="row">
-<div class="col-8">
-<div class="carousel" id="mainCarousel">
-<div class="carousel-inner">
-<div class="carousel-item active" style="background:linear-gradient(135deg,#0f0f1e,#1a0a2e)">
-<h2 style="color:#fff">🎵 音频格式转换</h2>
-<p style="color:#aaa">MP3、WAV、FLAC、OGG、AAC、M4A、Opus 互转。可选比特率，浏览器本地处理，文件不上传服务器。</p>
+<!-- Hero -->
+<div class="hero">
+<div>
+<h1>音频转换 · 提取 · 裁剪</h1>
+<p>免费在线工具，支持 MP3、WAV、FLAC、OGG、AAC、M4A、Opus 互转。所有处理在浏览器本地完成，文件不上传服务器。</p>
+</div>
+<div class="hero-actions">
 <button class="btn btn-primary" onclick="switchTab('convert')">开始转换</button>
-</div>
-<div class="carousel-item" style="background:linear-gradient(135deg,#0a1a1e,#0f0a2e)">
-<h2 style="color:#fff">🎬 视频提取音频</h2>
-<p style="color:#aaa">从 MP4、MOV、AVI、MKV、WebM 等视频文件中提取音频轨道，保存为 MP3/WAV/FLAC 等格式。</p>
-<button class="btn btn-primary" onclick="switchTab('extract')">提取音频</button>
-</div>
-<div class="carousel-item" style="background:linear-gradient(135deg,#1e0a1a,#2e0a1e)">
-<h2 style="color:#fff">✂️ 音频裁剪</h2>
-<p style="color:#aaa">截取音频任意片段，精确到秒。支持 MP3、WAV、FLAC、OGG 格式输出。</p>
-<button class="btn btn-primary" onclick="switchTab('trim')">裁剪音频</button>
-</div>
-<div class="carousel-item" style="background:linear-gradient(135deg,#0a1a1e,#0f0f2e)">
-<h2 style="color:#fff">📋 元数据查看</h2>
-<p style="color:#aaa">查看音频文件的编码格式、采样率、比特率、时长、声道数等详细信息。</p>
-<button class="btn btn-primary" onclick="switchTab('metadata')">查看元数据</button>
-</div>
-</div>
-<ol class="carousel-indicators" id="carousel-dots">
-<li class="active" onclick="goCarousel(0)"></li>
-<li onclick="goCarousel(1)"></li>
-<li onclick="goCarousel(2)"></li>
-<li onclick="goCarousel(3)"></li>
-</ol>
-<button class="carousel-control left" onclick="prevCarousel()">‹</button>
-<button class="carousel-control right" onclick="nextCarousel()">›</button>
-</div>
-</div>
-
-<div class="col-4">
-<div class="sidebar-box">
-<div class="sidebar-header">
-<div class="sidebar-tabs">
-<span class="sidebar-tab active" onclick="switchRecTab('new')">最新转换</span>
-<span class="sidebar-tab" onclick="switchRecTab('popular')">热门格式</span>
-</div>
-</div>
-<div class="sidebar-body" id="rec-body">
-<div class="track-item"><span class="track-name">🎵 上传文件开始使用转换功能</span><span class="track-time green">就绪</span></div>
-<div class="track-item"><span class="track-name">🎬 支持从视频中提取音频轨道</span><span class="track-time">提取</span></div>
-<div class="track-item"><span class="track-name">✂️ 支持精确裁剪音频片段</span><span class="track-time">裁剪</span></div>
-<div class="track-item"><span class="track-name">📋 查看音频文件的详细元数据</span><span class="track-time">信息</span></div>
-</div>
-</div>
+<button class="btn" onclick="switchTab('extract')">提取音频</button>
+<button class="btn" onclick="switchTab('trim')">裁剪音频</button>
 </div>
 </div>
 
 <!-- Stats -->
-<div class="stats-row" style="margin-top:20px">
+<div class="stats-row">
 <div class="stat-card"><div class="stat-num">7+</div><div class="stat-label">支持格式</div></div>
 <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">核心工具</div></div>
 <div class="stat-card"><div class="stat-num">本地</div><div class="stat-label">浏览器处理</div></div>
@@ -305,38 +274,38 @@ a{color:inherit;text-decoration:none}
 <!-- Tools -->
 <div class="section">
 <div class="section-header">
-<div class="section-title">🔧 全部工具</div>
+<div class="section-title"><span>🔧</span> 全部工具</div>
 </div>
 <div class="tool-grid">
 <div class="tool-card" onclick="switchTab('convert')">
-<div class="tool-card-icon">🔄</div>
+<span class="tool-card-icon">🔄</span>
 <div class="tool-card-title">格式转换</div>
-<div class="tool-card-desc">MP3、WAV、FLAC、OGG、AAC、M4A、Opus 任意互转，可选品质</div>
+<div class="tool-card-desc">MP3、WAV、FLAC、OGG、AAC、M4A、Opus 任意互转，可选比特率</div>
 </div>
 <div class="tool-card" onclick="switchTab('extract')">
-<div class="tool-card-icon">🎬</div>
+<span class="tool-card-icon">🎬</span>
 <div class="tool-card-title">视频提取音频</div>
-<div class="tool-card-desc">从 MP4、MOV、AVI、MKV、WebM、FLV 提取音频</div>
+<div class="tool-card-desc">从 MP4、MOV、AVI、MKV、WebM、FLV 提取音频轨道</div>
 </div>
 <div class="tool-card" onclick="switchTab('trim')">
-<div class="tool-card-icon">✂️</div>
+<span class="tool-card-icon">✂️</span>
 <div class="tool-card-title">音频裁剪</div>
 <div class="tool-card-desc">精确裁剪起止时间，截取所需音频片段</div>
 </div>
 <div class="tool-card" onclick="switchTab('metadata')">
-<div class="tool-card-icon">📋</div>
+<span class="tool-card-icon">📋</span>
 <div class="tool-card-title">元数据查看</div>
 <div class="tool-card-desc">查看格式、采样率、码率、声道等详细信息</div>
 </div>
 </div>
 </div>
 
-<!-- Tool Panels -->
+<!-- Convert Panel -->
 <div id="tool-panel-convert" class="tool-panel" style="display:none">
-<div class="tool-panel-title">🔄 音频格式转换</div>
+<div class="tool-panel-title"><span>🔄</span> 音频格式转换</div>
 <div class="upload-zone" onclick="document.getElementById('convert-input').click()">
-<div class="upload-zone-icon">🎵</div>
-<div class="upload-zone-text">点击此处上传音频文件</div>
+<span class="upload-zone-icon">🎵</span>
+<div class="upload-zone-text">点击上传 或 拖拽文件到此处</div>
 <div class="upload-zone-hint">支持 MP3 / WAV / FLAC / OGG / AAC / M4A / WMA</div>
 </div>
 <input id="convert-input" type="file" multiple accept="audio/*,.mp3,.wav,.flac,.ogg,.aac,.m4a,.wma" style="display:none">
@@ -358,14 +327,15 @@ a{color:inherit;text-decoration:none}
 <div class="progress-bar-outer"><div class="progress-bar-inner" id="convert-progress-bar"></div></div>
 <div class="progress-text" id="convert-progress-text">就绪</div>
 </div>
-<div id="convert-results"></div>
+<div class="results-area" id="convert-results"></div>
 </div>
 
+<!-- Extract Panel -->
 <div id="tool-panel-extract" class="tool-panel" style="display:none">
-<div class="tool-panel-title">🎬 从视频提取音频</div>
+<div class="tool-panel-title"><span>🎬</span> 从视频提取音频</div>
 <div class="upload-zone" onclick="document.getElementById('extract-input').click()">
-<div class="upload-zone-icon">🎬</div>
-<div class="upload-zone-text">点击上传视频文件</div>
+<span class="upload-zone-icon">🎬</span>
+<div class="upload-zone-text">点击上传 或 拖拽视频到此处</div>
 <div class="upload-zone-hint">支持 MP4 / MOV / AVI / MKV / WebM / FLV</div>
 </div>
 <input id="extract-input" type="file" multiple accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.flv" style="display:none">
@@ -387,27 +357,28 @@ a{color:inherit;text-decoration:none}
 <div class="progress-bar-outer"><div class="progress-bar-inner" id="extract-progress-bar"></div></div>
 <div class="progress-text" id="extract-progress-text">就绪</div>
 </div>
-<div id="extract-results"></div>
+<div class="results-area" id="extract-results"></div>
 </div>
 
+<!-- Trim Panel -->
 <div id="tool-panel-trim" class="tool-panel" style="display:none">
-<div class="tool-panel-title">✂️ 音频裁剪</div>
+<div class="tool-panel-title"><span>✂️</span> 音频裁剪</div>
 <div class="upload-zone" onclick="document.getElementById('trim-input').click()">
-<div class="upload-zone-icon">✂️</div>
-<div class="upload-zone-text">点击上传音频文件</div>
+<span class="upload-zone-icon">✂️</span>
+<div class="upload-zone-text">点击上传 或 拖拽音频到此处</div>
 <div class="upload-zone-hint">支持 MP3 / WAV / FLAC / OGG / AAC / M4A</div>
 </div>
 <input id="trim-input" type="file" accept="audio/*,.mp3,.wav,.flac,.ogg,.aac,.m4a" style="display:none">
 <div class="file-list" id="trim-files"></div>
 <div id="trim-toolbar" style="display:none">
 <div class="trim-controls">
-<div class="trim-range"><span style="font-size:12px;color:#888">起始</span>
-<input type="number" id="trim-start-min" value="0" min="0" style="width:50px"> : <input type="number" id="trim-start-sec" value="0" min="0" max="59" style="width:50px"></div>
-<div class="trim-range"><span style="font-size:12px;color:#888">结束</span>
-<input type="number" id="trim-end-min" value="0" min="0" style="width:50px"> : <input type="number" id="trim-end-sec" value="0" min="0" max="59" style="width:50px"></div>
-<span style="font-size:11px;color:#555">总时长: <span id="trim-duration">00:00</span></span>
+<div class="trim-range"><span>起始</span>
+<input type="number" id="trim-start-min" value="0" min="0"> : <input type="number" id="trim-start-sec" value="0" min="0" max="59"></div>
+<div class="trim-range"><span>结束</span>
+<input type="number" id="trim-end-min" value="0" min="0"> : <input type="number" id="trim-end-sec" value="0" min="0" max="59"></div>
+<span style="font-size:12px;color:#555">总时长: <span id="trim-duration">00:00</span></span>
 </div>
-<div class="toolbar-row" style="margin-top:10px">
+<div class="toolbar-row" style="margin-top:12px">
 <span class="toolbar-label">输出格式</span>
 <select id="trim-format"><option value="mp3">MP3</option><option value="wav">WAV</option><option value="flac">FLAC</option><option value="ogg">OGG</option></select>
 <button class="btn btn-primary" id="trim-btn" disabled>裁剪并下载</button>
@@ -417,13 +388,14 @@ a{color:inherit;text-decoration:none}
 <div class="progress-bar-outer"><div class="progress-bar-inner" id="trim-progress-bar"></div></div>
 <div class="progress-text" id="trim-progress-text">就绪</div>
 </div>
-<div id="trim-results"></div>
+<div class="results-area" id="trim-results"></div>
 </div>
 
+<!-- Metadata Panel -->
 <div id="tool-panel-metadata" class="tool-panel" style="display:none">
-<div class="tool-panel-title">📋 音频元数据查看</div>
+<div class="tool-panel-title"><span>📋</span> 音频元数据查看</div>
 <div class="upload-zone" onclick="document.getElementById('meta-input').click()">
-<div class="upload-zone-icon">📋</div>
+<span class="upload-zone-icon">📋</span>
 <div class="upload-zone-text">点击上传文件查看元数据</div>
 <div class="upload-zone-hint">支持 MP3 / WAV / FLAC / OGG / AAC / M4A / WMA</div>
 </div>
@@ -436,7 +408,8 @@ a{color:inherit;text-decoration:none}
 
 <footer class="footer">
 <div class="container">
-<p>AudioPro — 在线音频转换 & 提取工具 | 所有处理在浏览器本地完成，文件不上传服务器</p>
+<p>AudioPro — 在线音频转换 & 提取工具</p>
+<p>所有处理在浏览器本地完成，<strong style="color:#666">文件不上传服务器</strong></p>
 <p><a href="https://github.com/liuxiang147/AudioPro" target="_blank">GitHub</a></p>
 </div>
 </footer>
@@ -445,19 +418,19 @@ a{color:inherit;text-decoration:none}
 
 <script>
 // ==================== CORE ====================
-const { createFFmpeg, fetchFile } = FFmpeg;
-const ffmpeg = createFFmpeg({ log: true, corePath: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js' });
+const ffmpeg = FFmpeg.createFFmpeg({ log: false, corePath: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js' });
 let ffmpegLoaded = false;
+const overlay = document.getElementById('loadingOverlay');
 
 async function ensureFFmpeg() {
   if (!ffmpegLoaded) {
-    showToast('正在加载 ffmpeg 引擎 (~30MB)...', '');
+    overlay.classList.add('show');
     await ffmpeg.load();
     ffmpegLoaded = true;
-    showToast('ffmpeg 引擎就绪', 'success');
+    overlay.classList.remove('show');
   }
 }
-setTimeout(() => { ensureFFmpeg().catch(() => {}); }, 1000);
+setTimeout(() => { ensureFFmpeg().catch(() => { overlay.classList.remove('show'); showToast('FFmpeg 加载失败，请刷新重试', 'error'); }); }, 800);
 
 // ==================== NAV / TAB ====================
 function switchTab(tab, format) {
@@ -465,58 +438,23 @@ function switchTab(tab, format) {
   document.querySelectorAll('[data-tab="' + tab + '"]').forEach(el => el.classList.add('active'));
   document.querySelectorAll('.tool-panel').forEach(p => p.style.display = 'none');
   const panel = document.getElementById('tool-panel-' + tab);
-  if (panel) panel.style.display = 'block';
-  if (format) {
-    const sel = document.getElementById(tab === 'convert' ? 'convert-format' : null);
+  if (panel) { panel.style.display = 'block'; panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  if (format && tab === 'convert') {
+    const sel = document.getElementById('convert-format');
     if (sel) sel.value = format;
   }
-  window.scrollTo({ top: panel ? panel.offsetTop - 100 : 0, behavior: 'smooth' });
 }
 
 document.querySelectorAll('.navbar-nav [data-tab]').forEach(el => {
-  el.addEventListener('click', e => {
-    e.preventDefault();
-    switchTab(el.dataset.tab, el.dataset.format);
-  });
+  el.addEventListener('click', e => { e.preventDefault(); switchTab(el.dataset.tab, el.dataset.format); });
 });
 
 function searchDocs(q) {
   const v = (q || '').toLowerCase();
-  if (v.includes('mp3') && v.includes('flac')) switchTab('convert');
-  else if (v.includes('mp3') && v.includes('wav')) switchTab('convert');
-  else if (v.includes('提取') || v.includes('视频')) switchTab('extract');
-  else if (v.includes('裁剪') || v.includes('截取')) switchTab('trim');
-  else if (v.includes('元数据') || v.includes('信息') || v.includes('查看')) switchTab('metadata');
-  else switchTab('convert');
-}
-
-// ==================== CAROUSEL ====================
-let carouselIdx = 0, carouselTimer;
-
-function goCarousel(i) {
-  const items = document.querySelectorAll('#mainCarousel .carousel-item');
-  const dots = document.querySelectorAll('#carousel-dots li');
-  items.forEach((el, idx) => el.classList.toggle('active', idx === i));
-  dots.forEach((el, idx) => el.classList.toggle('active', idx === i));
-  carouselIdx = i;
-}
-function nextCarousel() { goCarousel((carouselIdx + 1) % 4); }
-function prevCarousel() { goCarousel((carouselIdx + 3) % 4); }
-
-carouselTimer = setInterval(nextCarousel, 5000);
-document.getElementById('mainCarousel').addEventListener('mouseenter', () => clearInterval(carouselTimer));
-document.getElementById('mainCarousel').addEventListener('mouseleave', () => { carouselTimer = setInterval(nextCarousel, 5000); });
-
-// ==================== SIDEBAR ====================
-function switchRecTab(t) {
-  document.querySelectorAll('.sidebar-tab').forEach(el => el.classList.remove('active'));
-  event.target.classList.add('active');
-  const body = document.getElementById('rec-body');
-  if (t === 'new') {
-    body.innerHTML = '<div class="track-item"><span class="track-name">🎵 上传文件开始使用转换功能</span><span class="track-time green">就绪</span></div><div class="track-item"><span class="track-name">🎬 支持从视频中提取音频轨道</span><span class="track-time">提取</span></div><div class="track-item"><span class="track-name">✂️ 支持精确裁剪音频片段</span><span class="track-time">裁剪</span></div><div class="track-item"><span class="track-name">📋 查看音频文件的详细元数据</span><span class="track-time">信息</span></div>';
-  } else {
-    body.innerHTML = '<div class="track-item"><span class="track-name">🔥 MP3 — 通用兼容格式</span><span class="track-time">128-320k</span></div><div class="track-item"><span class="track-name">🎵 WAV — 无损 PCM 格式</span><span class="track-time">无损</span></div><div class="track-item"><span class="track-name">💿 FLAC — 无损压缩</span><span class="track-time">压缩比 ~50%</span></div><div class="track-item"><span class="track-name">🎧 Opus — 最佳低码率</span><span class="track-time">64k ≈ MP3 128k</span></div>';
-  }
+  const pairs = { '提取': 'extract', '视频': 'extract', '裁剪': 'trim', '截取': 'trim', '元数据': 'metadata', '信息': 'metadata' };
+  for (const [kw, tab] of Object.entries(pairs)) { if (v.includes(kw)) { switchTab(tab); return; } }
+  if ((v.includes('mp3') || v.includes('flac') || v.includes('wav') || v.includes('ogg') || v.includes('转换') || v.includes('格式')) && !v.includes('元数据')) { switchTab('convert'); return; }
+  switchTab('convert');
 }
 
 // ==================== TOAST ====================
@@ -534,14 +472,15 @@ function formatDuration(s) { if(!s||!isFinite(s))return'00:00'; const m=Math.flo
 function esc(s) { const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
 function getExt(f) { return f.split('.').pop().toLowerCase(); }
 
-function setupUpload(inputId, dropTarget, listId, storage) {
+function setupUpload(inputId, panelId, storage) {
   const input = document.getElementById(inputId);
-  const drop = document.querySelector('#' + dropTarget + ' .upload-zone');
-  if(!drop) return;
-  drop.addEventListener('click', () => input.click());
-  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
-  drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('dragover'); handleFiles(e.dataTransfer.files, storage); });
+  const panel = document.getElementById(panelId);
+  if (!input || !panel) return;
+  const zone = panel.querySelector('.upload-zone');
+  zone.addEventListener('click', () => input.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); handleFiles(e.dataTransfer.files, storage); });
   input.addEventListener('change', () => { handleFiles(input.files, storage); input.value = ''; });
 }
 
@@ -565,9 +504,9 @@ function removeFile(i, id) {
   renderFileList(storage);
 }
 
-setupUpload('convert-input', 'tool-panel-convert', 'convert-files', convertFiles);
-setupUpload('extract-input', 'tool-panel-extract', 'extract-files', extractFiles);
-setupUpload('trim-input', 'tool-panel-trim', 'trim-files', trimFiles);
+setupUpload('convert-input', 'tool-panel-convert', convertFiles);
+setupUpload('extract-input', 'tool-panel-extract', extractFiles);
+setupUpload('trim-input', 'tool-panel-trim', trimFiles);
 
 // ==================== CONVERT ====================
 document.getElementById('convert-btn').addEventListener('click', async () => {
@@ -581,7 +520,7 @@ document.getElementById('convert-btn').addEventListener('click', async () => {
     const f = convertFiles[i], input = f.name, outName = f.name.replace(/\.[^.]+$/, '') + '.' + format;
     text.textContent = '处理中 (' + (i + 1) + '/' + convertFiles.length + '): ' + f.name;
     try {
-      ffmpeg.FS('writeFile', input, await fetchFile(f));
+      ffmpeg.FS('writeFile', input, await FFmpeg.fetchFile(f));
       const args = ['-i', input, '-y'];
       if (quality !== '0' && format !== 'wav') args.push('-b:a', quality);
       const codecs = { mp3: 'libmp3lame', aac: 'aac', m4a: 'aac', flac: 'flac', ogg: 'libvorbis', opus: 'libopus' };
@@ -592,7 +531,7 @@ document.getElementById('convert-btn').addEventListener('click', async () => {
       ffmpeg.FS('unlink', input); ffmpeg.FS('unlink', outName);
     } catch (e) { results.innerHTML += '<div class="result-item" style="border-color:rgba(255,60,60,.2)"><div class="result-info"><div class="result-name" style="color:#ff6060">❌ ' + esc(f.name) + ' 失败</div><div class="result-meta">' + esc(e.message) + '</div></div></div>'; }
   }
-  bar.style.width = '100%'; text.textContent = '转换完成'; btn.disabled = false; showToast('转换完成！', 'success');
+  bar.style.width = '100%'; text.textContent = '转换完成 ✓'; btn.disabled = false; showToast('转换完成！点击下载保存文件', 'success');
 });
 
 // ==================== EXTRACT ====================
@@ -607,7 +546,7 @@ document.getElementById('extract-btn').addEventListener('click', async () => {
     const f = extractFiles[i], input = f.name, outName = f.name.replace(/\.[^.]+$/, '') + '_audio.' + format;
     text.textContent = '提取中 (' + (i + 1) + '/' + extractFiles.length + '): ' + f.name;
     try {
-      ffmpeg.FS('writeFile', input, await fetchFile(f));
+      ffmpeg.FS('writeFile', input, await FFmpeg.fetchFile(f));
       const codecs = { mp3: 'libmp3lame', aac: 'aac', m4a: 'aac', flac: 'flac', ogg: 'libvorbis' };
       const args = ['-i', input, '-vn', '-y', '-codec:a', codecs[format] || 'pcm_s16le'];
       if (format !== 'wav') args.push('-b:a', quality);
@@ -618,7 +557,7 @@ document.getElementById('extract-btn').addEventListener('click', async () => {
       ffmpeg.FS('unlink', input); ffmpeg.FS('unlink', outName);
     } catch (e) { results.innerHTML += '<div class="result-item" style="border-color:rgba(255,60,60,.2)"><div class="result-info"><div class="result-name" style="color:#ff6060">❌ ' + esc(f.name) + ' 提取失败</div><div class="result-meta">' + esc(e.message) + '</div></div></div>'; }
   }
-  bar.style.width = '100%'; text.textContent = '提取完成'; btn.disabled = false; showToast('提取完成！', 'success');
+  bar.style.width = '100%'; text.textContent = '提取完成 ✓'; btn.disabled = false; showToast('提取完成！点击下载保存文件', 'success');
 });
 
 // ==================== TRIM ====================
@@ -658,7 +597,7 @@ document.getElementById('trim-btn').addEventListener('click', async () => {
   ffmpeg.setProgress(({ ratio }) => { bar.style.width = (ratio * 100) + '%'; text.textContent = Math.round(ratio * 100) + '%'; });
   const input = f.name, outName = f.name.replace(/\.[^.]+$/, '') + '_trim_' + formatDuration(start) + '-' + formatDuration(end) + '.' + format;
   try {
-    ffmpeg.FS('writeFile', input, await fetchFile(f));
+    ffmpeg.FS('writeFile', input, await FFmpeg.fetchFile(f));
     const codecs = { mp3: 'libmp3lame', flac: 'flac', ogg: 'libvorbis' };
     const args = ['-i', input, '-ss', String(start), '-t', String(duration), '-y', '-codec:a', codecs[format] || 'pcm_s16le', outName];
     await ffmpeg.run(...args);
@@ -666,7 +605,7 @@ document.getElementById('trim-btn').addEventListener('click', async () => {
     results.innerHTML += '<div class="result-item"><div class="result-info"><div class="result-name">✅ ' + esc(outName) + '</div><div class="result-meta">' + formatSize(blob.size) + ' · ' + formatDuration(start) + ' → ' + formatDuration(end) + '</div></div><a class="result-download" href="' + URL.createObjectURL(blob) + '" download="' + esc(outName) + '">下载</a></div>';
     ffmpeg.FS('unlink', input); ffmpeg.FS('unlink', outName);
   } catch (e) { results.innerHTML += '<div class="result-item" style="border-color:rgba(255,60,60,.2)"><div class="result-info"><div class="result-name" style="color:#ff6060">❌ 裁剪失败</div><div class="result-meta">' + esc(e.message) + '</div></div></div>'; }
-  bar.style.width = '100%'; text.textContent = '裁剪完成'; btn.disabled = false; showToast('裁剪完成！', 'success');
+  bar.style.width = '100%'; text.textContent = '裁剪完成 ✓'; btn.disabled = false; showToast('裁剪完成！点击下载保存文件', 'success');
 });
 
 // ==================== METADATA ====================
@@ -678,12 +617,12 @@ document.querySelector('#tool-panel-metadata .upload-zone').addEventListener('dr
 
 async function showFileMetadata(file) {
   const el = document.getElementById('meta-info');
-  el.innerHTML = '<div class="progress-text" style="padding:20px">正在分析文件...</div>';
+  el.innerHTML = '<div class="progress-text" style="padding:24px">正在分析文件...</div>';
   let html = '<div class="sidebar-box" style="margin-top:12px"><div class="sidebar-header"><div class="section-title" style="font-size:14px;border:none;margin:0">📄 ' + esc(file.name) + '</div></div><div class="sidebar-body" style="padding:10px 16px"><div class="meta-grid"><div class="meta-row"><span class="meta-key">文件名</span><span class="meta-val">' + esc(file.name) + '</span></div><div class="meta-row"><span class="meta-key">大小</span><span class="meta-val">' + formatSize(file.size) + '</span></div><div class="meta-row"><span class="meta-key">类型</span><span class="meta-val">' + (file.type || getExt(file.name).toUpperCase()) + '</span></div><div class="meta-row"><span class="meta-key">修改时间</span><span class="meta-val">' + new Date(file.lastModified).toLocaleString() + '</span></div></div></div></div>';
   try {
     const buffer = await file.arrayBuffer(), ctx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 1, 44100);
     const decoded = await ctx.decodeAudioData(buffer.slice(0));
-    html += '<div class="sidebar-box" style="margin-top:8px"><div class="sidebar-header"><div class="section-title" style="font-size:14px;border:none;margin:0">🎧 音频属性</div></div><div class="sidebar-body" style="padding:10px 16px"><div class="meta-grid"><div class="meta-row"><span class="meta-key">时长</span><span class="meta-val">' + formatDuration(decoded.duration) + ' (' + decoded.duration.toFixed(2) + 's)</span></div><div class="meta-row"><span class="meta-key">采样率</span><span class="meta-val">' + decoded.sampleRate + ' Hz</span></div><div class="meta-row"><span class="meta-key">声道</span><span class="meta-val">' + decoded.numberOfChannels + ' (' + (decoded.numberOfChannels===1?'单声道':decoded.numberOfChannels===2?'立体声':decoded.numberOfChannels+'声道') + ')</span></div><div class="meta-row"><span class="meta-key">解码位深</span><span class="meta-val">32-bit 浮点</span></div></div></div></div>';
+    html += '<div class="sidebar-box" style="margin-top:8px"><div class="sidebar-header"><div class="section-title" style="font-size:14px;border:none;margin:0">🎧 音频属性</div></div><div class="sidebar-body" style="padding:10px 16px"><div class="meta-grid"><div class="meta-row"><span class="meta-key">时长</span><span class="meta-val">' + formatDuration(decoded.duration) + ' (' + decoded.duration.toFixed(2) + 's)</span></div><div class="meta-row"><span class="meta-key">采样率</span><span class="meta-val">' + decoded.sampleRate + ' Hz</span></div><div class="meta-row"><span class="meta-key">声道</span><span class="meta-val">' + decoded.numberOfChannels + ' (' + (decoded.numberOfChannels===1?'单声道':decoded.numberOfChannels===2?'立体声':decoded.numberOfChannels+'声道') + ')</span></div></div></div></div>';
     if (decoded.duration > 0) html += '<div class="sidebar-box" style="margin-top:8px"><div class="sidebar-header"><div class="section-title" style="font-size:14px;border:none;margin:0">📊 码率</div></div><div class="sidebar-body" style="padding:10px 16px"><div class="meta-grid"><div class="meta-row"><span class="meta-key">原始码率</span><span class="meta-val">' + (file.size * 8 / decoded.duration / 1000).toFixed(1) + ' kbps</span></div><div class="meta-row"><span class="meta-key">文件格式</span><span class="meta-val">' + getExt(file.name).toUpperCase() + '</span></div></div></div></div>';
   } catch (e) { html += '<div class="sidebar-box" style="margin-top:8px"><div class="sidebar-body" style="padding:16px;color:#ff6060;font-size:12px">⚠️ 无法解码该文件</div></div>'; }
   el.innerHTML = html;
